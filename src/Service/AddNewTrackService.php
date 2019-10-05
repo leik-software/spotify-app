@@ -31,6 +31,7 @@ final class AddNewTrackService
             'Instrumental',
             ' VIP',
             'ASOT',
+            '(Mixed)',
         ];
         if(!$force){
             foreach ($replacements as $replacement){
