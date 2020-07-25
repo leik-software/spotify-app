@@ -25,8 +25,7 @@ final class AddTrackFromPlaylistService
     public function execute(string $playlistId, \stdClass $json, SymfonyStyle $io): void
     {
         $track = $json->track;
-        if(!$track->id){
-            $io->writeln(sprintf('track %s has no id', $track->name));
+        if(!isset($track->id) || !$track->id){
             return;
         }
         $this->addTrackService->execute($track, $io, $playlistId === '3Y6xdoDZ4vvad5dTVQd6KE');

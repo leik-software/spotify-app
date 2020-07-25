@@ -10,10 +10,26 @@ final class SyncPlaylistsWorker extends BaseWorker
 
     public function run(SymfonyStyle $io): void
     {
-        $playlists = $this->getApi()->getMyPlaylists();
+        $this->entityManager->getConnection()->executeUpdate(
+            'UPDATE playlist SET autoscan = 0'
+        );
+        $playlists = $this->getApi()->getMyPlaylists(['limit'=>50]);
         foreach ($playlists->items as $playlist){
-            $checkId = $this->entityManager->getConnection()->executeQuery('SELECT id FROM playlist WHERE id = ?', [$playlist->id],[\PDO::PARAM_STR])->fetchColumn();
-            if($checkId){
+            if($playlist->owner->id === 'xyegc3dw53c4qgnophwvmwhbs' && $playlist->id !== '3Y6xdoDZ4vvad5dTVQd6KE'){
+                continue; //eigene Playlists
+            }
+            $checkPlaylist = $this->entityManager->getConnection()->executeQuery('SELECT id, name FROM playlist WHERE id = ?', [$playlist->id],[\PDO::PARAM_STR])->fetch();
+            if($checkPlaylist && $checkPlaylist['id']){
+                $this->entityManager->getConnection()->executeQuery(
+                    'UPDATE playlist SET name=?, autoscan=1 WHERE id=?',
+                    [$playlist->name, $playlist->id],
+                    [\PDO::PARAM_STR, \PDO::PARAM_STR]
+                );
+                $io->writeln(
+                    sprintf(
+                        'Playlist "%s" updated', $playlist->name
+                    )
+                );
                 continue;
             }
             $this->entityManager->persist(new Playlist($playlist));

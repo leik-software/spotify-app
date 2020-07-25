@@ -41,11 +41,11 @@ final class AddNewTrackService
             }
 
             if($track->duration_ms < 2.5*60*1000){
-                $io->writeln('Track too short');
+                #$io->writeln('Track too short');
                 return;
             }
             if($track->duration_ms > 10*60*1000){
-                $io->writeln('Track too long');
+                #$io->writeln('Track too long');
                 return;
             }
         }

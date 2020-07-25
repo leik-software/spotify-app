@@ -29,11 +29,6 @@ final class AddArtistService
         $this->entityManager->persist(
             new Artist($json->id, $json->name)
         );
-        $io->writeln(
-            sprintf(
-                'Artist %s added', $json->name
-            )
-        );
         $this->entityManager->flush();
         return true;
     }

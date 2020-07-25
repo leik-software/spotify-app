@@ -38,18 +38,20 @@ final class AddTrackService
         $this->addNewTrackService->execute($track, $io, $force);
         $trackHash = TrackHashHelper::generateHash($track);
         $check = $this->entityManager->getConnection()->executeQuery(
-            'SELECT id FROM track WHERE id = ? ', [$track->id],[\PDO::PARAM_STR]
-        )->fetchColumn();
+            'SELECT id, name, artist_name FROM track WHERE id = ? ', [$track->id],[\PDO::PARAM_STR]
+        )->fetch();
+        if($check && ($check['name'] !== $track->name || $check['artist_name'] !== TrackHashHelper::getArtistNames($track))){
+            $this->entityManager->getConnection()->executeQuery(
+                'UPDATE track SET name =?, artist_name = ? WHERE id = ?',
+                [$track->name, TrackHashHelper::getArtistNames($track), $track->id],
+                [\PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_STR]
+            );
+        }
         if($check){
             return false;
         }
         $this->entityManager->persist(
             new Track($track, $trackHash, TrackHashHelper::getArtistNames($track))
-        );
-        $io->writeln(
-            sprintf(
-                'Track "%s" added', $track->name
-            )
         );
 
         $this->entityManager->flush();

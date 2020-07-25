@@ -7,13 +7,8 @@ final class TrackHashHelper
     public static function generateHash(\stdClass $track): string
     {
         $hashBase = $track->name;
-        $artistNames=[];
-        foreach ($track->artists as $artist){
-            $artistNames[] = $artist->name;
-        }
-        sort($artistNames);
-        $hashBase.=implode('-',$artistNames);
-        return md5($hashBase);
+        $hashBase.=self::getArtistNames($track);
+        return md5(strtolower($hashBase));
     }
 
     public static function getArtistNames(\stdClass $track): string

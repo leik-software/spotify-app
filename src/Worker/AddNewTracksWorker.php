@@ -13,7 +13,7 @@ final class AddNewTracksWorker extends BaseWorker
     {
         do{
             $trackIdsToAdd = $this->entityManager->getConnection()->executeQuery(
-                'SELECT id FROM add_new_track LIMIT 10'
+                'SELECT id FROM add_new_track ORDER BY `name` LIMIT 10'
             )->fetchAll(\PDO::FETCH_COLUMN);
             if(!count($trackIdsToAdd)){
                 break;
@@ -29,6 +29,7 @@ final class AddNewTracksWorker extends BaseWorker
                 ],
                 [Connection::PARAM_STR_ARRAY]
             );
+            usleep(500000);
         }while(true);
     }
 

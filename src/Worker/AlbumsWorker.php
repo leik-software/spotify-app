@@ -33,6 +33,9 @@ final class AlbumsWorker extends BaseWorker
             do{
                 $items = $this->getApi()->getAlbumTracks($albumId, ['offset' => $offset, 'limit' => 50]);
                 foreach ($items->items as $item){
+                    if(!$item){
+                        continue;
+                    }
                     $this->addTrackFromAlbumService->execute($albumId, $item, $io);
                 }
                 if(!$items->next){
